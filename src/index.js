@@ -8,7 +8,7 @@ const dcBot = new Discord.Client()
 const TelegramBot = require(`node-telegram-bot-api`)
 const TOKEN_TG = conf.tg_token
 const groupID = conf.tg_group_id
-const tgBot = new TelegramBot(TOKEN_TG, { polling: false })
+const tgBot = new TelegramBot(TOKEN_TG, { polling: true })
 
 // Discord stuff
 
