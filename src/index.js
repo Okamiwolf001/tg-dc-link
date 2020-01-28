@@ -85,7 +85,7 @@ dcBot.on(`msgRecieved`, (msg) => {
   const options = { caption: ` _${msg.author.username}_: ${!msg.content ? `` : msg.content}`,
     parse_mode: `markdown` }
 
-  if (attachments) {
+  if (attachments.size !== 0) {
     attachments.map(file => {
       tgBot.sendDocument(groupID, file.url, options)
     })
