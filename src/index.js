@@ -9,6 +9,7 @@ const TelegramBot = require(`node-telegram-bot-api`)
 const TOKEN_TG = conf.tg_token
 const groupID = conf.tg_group_id
 const tgBot = new TelegramBot(TOKEN_TG, { polling: true })
+process.env[`NTBA_FIX_350`] = 1
 
 // Discord stuff
 
@@ -81,20 +82,14 @@ tgBot.on(`polling_error`, e => {
 
 dcBot.on(`msgRecieved`, (msg) => {
   const attachments = msg.attachments
-  /* if (attachments) {
-    const request = require(`request`).defaults({ encoding: null })
-    let data, mime
+  const options = { caption: ` _${msg.author.username}_: ${!msg.content ? `` : msg.content}`,
+    parse_mode: `markdown` }
 
+  if (attachments) {
     attachments.map(file => {
-      request.get(file.url, (err, res, body) => {
-        if (err) console.log(err)
-
-        mime = res.headers[`content-type`]
-        data = `data:${mime};base64,${Buffer.from(body).toString(`base64`)}`
-      })
-      console.log(data.toString())
+      tgBot.sendDocument(groupID, file.url, options)
     })
-  } *//* else { */
-  tgBot.sendMessage(groupID, `_${msg.author.username}_: ${msg.content}`, { parse_mode: `markdown` })
-  /* } */
+  } else {
+    tgBot.sendMessage(groupID, `_${msg.author.username}_: ${msg.content}`, { parse_mode: `markdown` })
+  }
 })
