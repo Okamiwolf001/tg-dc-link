@@ -11,6 +11,11 @@ const groupID = conf.tg_group_id
 const tgBot = new TelegramBot(TOKEN_TG, { polling: true })
 process.env[`NTBA_FIX_350`] = 1
 
+// Helper stuff
+const getNick = (msg) => {
+  return msg.guild.member(msg.author).nickname ? msg.guild.member(msg.author).nickname : msg.author.username
+}
+
 // Discord stuff
 
 dcBot.on(`ready`, () => {
@@ -82,7 +87,7 @@ tgBot.on(`polling_error`, e => {
 
 dcBot.on(`msgRecieved`, (msg) => {
   const attachments = msg.attachments
-  const options = { caption: ` _${msg.author.username}_: ${!msg.content ? `` : msg.content}`,
+  const options = { caption: ` _${getNick(msg)}_: ${!msg.content ? `` : msg.content}`,
     parse_mode: `markdown` }
 
   if (attachments.size !== 0) {
@@ -90,6 +95,6 @@ dcBot.on(`msgRecieved`, (msg) => {
       tgBot.sendDocument(groupID, file.url, options)
     })
   } else {
-    tgBot.sendMessage(groupID, `_${msg.author.username}_: ${msg.content}`, { parse_mode: `markdown` })
+    tgBot.sendMessage(groupID, `_${getNick(msg)}_: ${msg.content}`, { parse_mode: `markdown` })
   }
 })
