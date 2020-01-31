@@ -2,5 +2,5 @@
     "tg_token": "your telegram bot token",
     "dc_token": "your discord bot token",
     "dc_chann_id": "discord channel ID where messages will be sent",
-    "tg_group_id": "telegram group id where messages will be sent (can also be a number/int",
+    "tg_group_id": "telegram group id where messages will be sent (can also be a number/int"
 }
