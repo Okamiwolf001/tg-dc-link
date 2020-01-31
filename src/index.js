@@ -9,11 +9,45 @@ const TelegramBot = require(`node-telegram-bot-api`)
 const TOKEN_TG = conf.tg_token
 const groupID = conf.tg_group_id
 const tgBot = new TelegramBot(TOKEN_TG, { polling: true })
-process.env[`NTBA_FIX_350`] = 1
+const hookcord = require(`hookcord`)
+const HookDC = new hookcord.Hook()
+
+process.env[`NTBA_FIX_350`] = 1 // I don't think I need this anymore?
+
+HookDC.login(conf.discord_webhook[0], conf.discord_webhook[1])
 
 // Helper stuff
 const getNick = (msg) => {
   return msg.guild.member(msg.author).nickname ? msg.guild.member(msg.author).nickname : msg.author.username
+}
+
+const sendDCWebHook = (msg, f = null) => {
+  const obj = {
+    content: msg.text,
+    username: msg.from.username,
+    avatar_url: ``,
+    file: f || ``
+  }
+
+  if (f) return // files don't work
+
+  tgBot.getUserProfilePhotos(msg.from.id)
+    .then(pfps => {
+      try {
+        return pfps.photos[0][0].file_id
+      } catch (e) {
+        return null
+      }
+    }).then(fID => {
+      if (fID) {
+        return tgBot.getFileLink(fID)
+      } else {
+        return ``
+      }
+    }).then(link => {
+      obj.avatar_url = link
+      HookDC.setPayload(obj).fire().catch(e => console.log(e))
+    })
 }
 
 // Discord stuff
@@ -31,16 +65,16 @@ dcBot.on(`message`, (msg) => {
 })
 
 tgBot.on(`msgRecieved`, (msg) => {
-  dcBot.channels.get(channID).send(`**${msg.from.username}**: ${msg.text}`)
+  // dcBot.channels.get(channID).send(`**${msg.from.username}**: ${msg.text}`)
+
+  sendDCWebHook(msg)
 })
 
 tgBot.on(`fileRecieved`, (msg, file) => {
   tgBot.getFileLink(file).then(f => {
     const arr = f.split(`.`)
     if (arr[arr.length - 1] === `tgs`) return
-    dcBot.channels.get(channID).send(
-      `**${msg.from.username}**: ${!msg.text ? `` : msg.text}`,
-      { file: f })
+    sendDCWebHook(msg, f)
   })
 })
 

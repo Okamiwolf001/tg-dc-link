@@ -8,8 +8,9 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^11.5.1",
-    "node-telegram-bot-api": "^0.40.0",
-    "request": "^2.88.0"
+    "google-closure-compiler": "^20200112.0.0",
+    "hookcord": "^2.0.2",
+    "node-telegram-bot-api": "^0.40.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
