@@ -49,11 +49,11 @@ dcBot.login(TOKEN_DC)
 // Telegram stuff
 
 tgBot.on(`text`, (msg) => {
-  if (msg.chat.id !== groupID) return
-  if (msg.from.is_bot) return
   if (msg.text.includes(`gibmetheid`)) {
     tgBot.sendMessage(msg.chat.id, msg.chat.id.toString())
   }
+  if (msg.chat.id !== groupID) return
+  if (msg.from.is_bot) return
   tgBot.emit(`msgRecieved`, msg)
 })
 
