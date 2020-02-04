@@ -9,11 +9,53 @@ const TelegramBot = require(`node-telegram-bot-api`)
 const TOKEN_TG = conf.tg_token
 const groupID = conf.tg_group_id
 const tgBot = new TelegramBot(TOKEN_TG, { polling: true })
-process.env[`NTBA_FIX_350`] = 1
+const hookcord = require(`hookcord`)
+const HookDC = new hookcord.Hook()
+
+HookDC.login(conf.discord_webhook[0], conf.discord_webhook[1])
 
 // Helper stuff
 const getNick = (msg) => {
   return msg.guild.member(msg.author).nickname ? msg.guild.member(msg.author).nickname : msg.author.username
+}
+
+const sendDCWebHook = (msg, f) => {
+  tgBot.getUserProfilePhotos(msg.from.id)
+    .then(pfps => {
+      try {
+        return pfps.photos[0][0].file_id
+      } catch (e) {
+        return null
+      }
+    }).then(fID => {
+      if (fID) {
+        return tgBot.getFileLink(fID)
+      } else {
+        return ``
+      }
+    }).then(link => {
+      if (f) {
+        return HookDC.setPayload(
+          {
+            username: msg.from.username,
+            avatar_url: link,
+            embeds: [
+              { title: msg.caption,
+                image: { url: f },
+                color: 0xffaaff }
+            ]
+          }
+        ).fire().catch(e => console.log(e))
+      } else {
+        return HookDC.setPayload(
+          {
+            username: msg.from.username,
+            avatar_url: link,
+            content: msg.text
+          }
+        ).fire().catch(e => console.log(e))
+      }
+    })
 }
 
 // Discord stuff
@@ -31,16 +73,14 @@ dcBot.on(`message`, (msg) => {
 })
 
 tgBot.on(`msgRecieved`, (msg) => {
-  dcBot.channels.get(channID).send(`**${msg.from.username}**: ${msg.text}`)
+  sendDCWebHook(msg, null)
 })
 
 tgBot.on(`fileRecieved`, (msg, file) => {
   tgBot.getFileLink(file).then(f => {
     const arr = f.split(`.`)
     if (arr[arr.length - 1] === `tgs`) return
-    dcBot.channels.get(channID).send(
-      `**${msg.from.username}**: ${!msg.text ? `` : msg.text}`,
-      { file: f })
+    sendDCWebHook(msg, f)
   })
 })
 

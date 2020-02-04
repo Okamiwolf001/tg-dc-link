@@ -1,6 +1,6 @@
 {
   "name": "dc-tglink",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A thing that connects a Discord channel with a Telegram group (And vice versa)",
   "main": "src/index.js",
   "scripts": {},
@@ -8,8 +8,8 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^11.5.1",
-    "node-telegram-bot-api": "^0.40.0",
-    "request": "^2.88.0"
+    "hookcord": "^2.0.2",
+    "node-telegram-bot-api": "^0.40.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
