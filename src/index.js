@@ -12,8 +12,6 @@ const tgBot = new TelegramBot(TOKEN_TG, { polling: true })
 const hookcord = require(`hookcord`)
 const HookDC = new hookcord.Hook()
 
-process.env[`NTBA_FIX_350`] = 1 // I don't think I need this anymore?
-
 HookDC.login(conf.discord_webhook[0], conf.discord_webhook[1])
 
 // Helper stuff
@@ -21,16 +19,7 @@ const getNick = (msg) => {
   return msg.guild.member(msg.author).nickname ? msg.guild.member(msg.author).nickname : msg.author.username
 }
 
-const sendDCWebHook = (msg, f = null) => {
-  const obj = {
-    content: msg.text,
-    username: msg.from.username,
-    avatar_url: ``,
-    file: f || ``
-  }
-
-  if (f) return // files don't work
-
+const sendDCWebHook = (msg, f) => {
   tgBot.getUserProfilePhotos(msg.from.id)
     .then(pfps => {
       try {
@@ -45,8 +34,27 @@ const sendDCWebHook = (msg, f = null) => {
         return ``
       }
     }).then(link => {
-      obj.avatar_url = link
-      HookDC.setPayload(obj).fire().catch(e => console.log(e))
+      if (f) {
+        return HookDC.setPayload(
+          {
+            username: msg.from.username,
+            avatar_url: link,
+            embeds: [
+              { title: msg.caption,
+                image: { url: f },
+                color: 0xffaaff }
+            ]
+          }
+        ).fire().catch(e => console.log(e))
+      } else {
+        return HookDC.setPayload(
+          {
+            username: msg.from.username,
+            avatar_url: link,
+            content: msg.text
+          }
+        ).fire().catch(e => console.log(e))
+      }
     })
 }
 
@@ -65,9 +73,7 @@ dcBot.on(`message`, (msg) => {
 })
 
 tgBot.on(`msgRecieved`, (msg) => {
-  // dcBot.channels.get(channID).send(`**${msg.from.username}**: ${msg.text}`)
-
-  sendDCWebHook(msg)
+  sendDCWebHook(msg, null)
 })
 
 tgBot.on(`fileRecieved`, (msg, file) => {
