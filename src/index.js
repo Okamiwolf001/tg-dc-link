@@ -19,7 +19,44 @@ const getNick = (msg) => {
   return msg.guild.member(msg.author).nickname ? msg.guild.member(msg.author).nickname : msg.author.username
 }
 
+const getMentionNick = (msg, client) => {
+  const mentArr = []
+  const ret = []
+  msg.content.match(Discord.MessageMentions.USERS_PATTERN).forEach(mention => {
+    if (mention.startsWith(`<@`) && mention.endsWith(`>`)) {
+      mentArr.push(mention.slice(2, -1).replace(`!`, ``))
+    }
+  })
+  mentArr.forEach(id => {
+    ret.push(msg.guild.members.get(id).nickname
+      ? msg.guild.members.get(id).nickname
+      : client.users.get(id).username)
+  })
+  return ret
+}
+
+const getChannelName = (msg, client) => {
+  const ret = []
+  msg.content.match(Discord.MessageMentions.CHANNELS_PATTERN).forEach(chann => {
+    ret.push(client.channels.get(chann.slice(2, -1)).name)
+  })
+  return ret
+}
 const sendDCWebHook = (msg, f) => {
+  const userName = () => {
+    const uname = msg.from.username || ``
+    const lname = msg.from.last_name || ``
+    let ret
+    if (uname) {
+      ret = `${msg.from.first_name} (${uname})`
+    } else if (uname && lname) {
+      ret = `${msg.from.first_name} ${lname} (${uname})`
+    } else if (uname === msg.from.first_name) {
+      ret = `${uname}`
+    }
+    return ret
+  }
+
   tgBot.getUserProfilePhotos(msg.from.id)
     .then(pfps => {
       try {
@@ -37,7 +74,7 @@ const sendDCWebHook = (msg, f) => {
       if (f) {
         return HookDC.setPayload(
           {
-            username: msg.from.username,
+            username: userName(),
             avatar_url: link,
             embeds: [
               { title: msg.caption,
@@ -49,7 +86,7 @@ const sendDCWebHook = (msg, f) => {
       } else {
         return HookDC.setPayload(
           {
-            username: msg.from.username,
+            username: userName(),
             avatar_url: link,
             content: msg.text
           }
@@ -127,7 +164,22 @@ tgBot.on(`polling_error`, e => {
 
 dcBot.on(`msgRecieved`, (msg) => {
   const attachments = msg.attachments
-  const options = { caption: ` _${getNick(msg)}_: ${!msg.content ? `` : msg.content}`,
+  let content = msg.content
+
+  if (msg.mentions.members.first()) {
+    const nicks = getMentionNick(msg, dcBot)
+    const mentions = msg.content.match(Discord.MessageMentions.USERS_PATTERN)
+    for (let i = 0; i < mentions.length; i++) {
+      content = content.replace(mentions[i], `@${nicks[i]}`)
+    }
+  } else if (msg.mentions.channels.first()) {
+    const channelNames = getChannelName(msg, dcBot)
+    const channels = msg.content.match(Discord.MessageMentions.CHANNELS_PATTERN)
+    for (let i = 0; i < channels.length; i++) {
+      content = content.replace(channels[i], `#${channelNames[i]}`)
+    }
+  }
+  const options = { caption: ` _${getNick(msg)}_: ${content ? `` : content}`,
     parse_mode: `markdown` }
 
   if (attachments.size !== 0) {
@@ -135,6 +187,6 @@ dcBot.on(`msgRecieved`, (msg) => {
       tgBot.sendDocument(groupID, file.url, options)
     })
   } else {
-    tgBot.sendMessage(groupID, `_${getNick(msg)}_: ${msg.content}`, { parse_mode: `markdown` })
+    tgBot.sendMessage(groupID, `_${getNick(msg)}_: ${content}`, { parse_mode: `markdown` })
   }
 })
