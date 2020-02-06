@@ -2,9 +2,11 @@
   "extends": "standard",
   "parser": "babel-eslint",
   "plugins": [
-    "eslint-plugin-json"
+    "eslint-plugin-json",
+    "sort-requires"
   ],
   "rules": {
+    "sort-requires/sort-requires": 2,
     "indent": [
       "error",
       2
