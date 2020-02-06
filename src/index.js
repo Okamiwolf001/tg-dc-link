@@ -164,6 +164,7 @@ tgBot.on(`polling_error`, e => {
 
 dcBot.on(`msgRecieved`, (msg) => {
   const attachments = msg.attachments
+  const emojiMatch = msg.content.match(/<:.+:([0-9]+)>/g)
   let content = msg.content
 
   if (msg.mentions.members.first()) {
@@ -172,13 +173,22 @@ dcBot.on(`msgRecieved`, (msg) => {
     for (let i = 0; i < mentions.length; i++) {
       content = content.replace(mentions[i], `@${nicks[i]}`)
     }
-  } else if (msg.mentions.channels.first()) {
+  }
+
+  if (msg.mentions.channels.first()) {
     const channelNames = getChannelName(msg, dcBot)
     const channels = msg.content.match(Discord.MessageMentions.CHANNELS_PATTERN)
     for (let i = 0; i < channels.length; i++) {
       content = content.replace(channels[i], `#${channelNames[i]}`)
     }
   }
+
+  if (emojiMatch) {
+    for (let i = 0; i < emojiMatch.length; i++) {
+      content = content.replace(emojiMatch[i], `:${emojiMatch[i].match(/\b[^\d\W]+\b/g)}:`)
+    }
+  }
+
   const options = { caption: ` _${getNick(msg)}_: ${content ? `` : content}`,
     parse_mode: `markdown` }
 
