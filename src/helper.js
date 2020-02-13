@@ -1,11 +1,9 @@
-const getNick = (msg) => {
+exports.getNick = (msg) => {
   return msg.guild.member(msg.author).nickname ? msg.guild.member(
     msg.author).nickname : msg.author.username
 }
 
-exports.getNick = getNick
-
-const getMentionNick = (msg, client) => {
+exports.getMentionNick = (msg, client) => {
   const { USERS_PATTERN } = require(`discord.js`).MessageMentions
   const mentArr = []
   const ret = []
@@ -23,9 +21,7 @@ const getMentionNick = (msg, client) => {
   return ret
 }
 
-exports.getMentionNick = getMentionNick
-
-const getChannelName = (msg, client) => {
+exports.getChannelName = (msg, client) => {
   const { CHANNELS_PATTERN } = require(`discord.js`).MessageMentions
   const ret = []
   msg.content.match(CHANNELS_PATTERN).forEach(
@@ -35,9 +31,7 @@ const getChannelName = (msg, client) => {
   return ret
 }
 
-exports.getChannelName = getChannelName
-
-const sendDCWebHook = (msg, f, bot, hook) => {
+exports.sendDCWebHook = (msg, f, bot, hook) => {
   const userName = () => {
     const uname = msg.from.username || ``
     const lname = msg.from.last_name || ``
@@ -103,9 +97,7 @@ const sendDCWebHook = (msg, f, bot, hook) => {
     })
 }
 
-exports.sendDCWebHook = sendDCWebHook
-
-const addEventLoader = (type, bot) => {
+exports.addEventLoader = (type, bot) => {
   const fs = require(`fs`)
   const path = require(`path`).join(__dirname, `./events/${type}/`)
 
@@ -120,5 +112,3 @@ const addEventLoader = (type, bot) => {
     })
   })
 }
-
-exports.addEventLoader = addEventLoader

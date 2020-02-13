@@ -1,4 +1,5 @@
-const helper = require(`../../helper`)
+const { sendDCWebHook } = require(`../../helper`)
+
 module.exports = (client, msg) => {
-  helper.sendDCWebHook(msg, null, client, client.webhook)
+  sendDCWebHook(msg, null, client, client.webhook)
 }
