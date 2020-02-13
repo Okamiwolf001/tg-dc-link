@@ -1,5 +1,5 @@
 const groupID = require(`../../../conf.json`).tg_group_id
-const helper = require(`../../helper`)
+const { getMentionNick, getChannelName, getNick } = require(`../../helper`)
 const { USERS_PATTERN, CHANNELS_PATTERN } = require(`discord.js`).MessageMentions
 
 module.exports = (client, msg) => {
@@ -8,7 +8,7 @@ module.exports = (client, msg) => {
   let content = msg.content
 
   if (msg.mentions.members.first()) {
-    const nicks = helper.getMentionNick(msg, client)
+    const nicks = getMentionNick(msg, client)
     const mentions = msg.content.match(USERS_PATTERN)
     for (let i = 0; i < mentions.length; i++) {
       content = content.replace(mentions[i], `@${nicks[i]}`)
@@ -16,7 +16,7 @@ module.exports = (client, msg) => {
   }
 
   if (msg.mentions.channels.first()) {
-    const channelNames = helper.getChannelName(msg, client)
+    const channelNames = getChannelName(msg, client)
     const channels = msg.content.match(CHANNELS_PATTERN)
     for (let i = 0; i < channels.length; i++) {
       content = content.replace(channels[i],
@@ -32,7 +32,7 @@ module.exports = (client, msg) => {
   }
 
   const options = {
-    caption: ` _${helper.getNick(msg)}_: ${content ? `` : content}`,
+    caption: ` _${getNick(msg)}_: ${content ? `` : content}`,
     parse_mode: `markdown` }
 
   if (attachments.size !== 0) {
@@ -40,6 +40,6 @@ module.exports = (client, msg) => {
       client.tgBot.sendDocument(groupID, file.url, options)
     })
   } else {
-    client.tgBot.sendMessage(groupID, `_${helper.getNick(msg)}_: ${content}`, { parse_mode: `markdown` })
+    client.tgBot.sendMessage(groupID, `_${getNick(msg)}_: ${content}`, { parse_mode: `markdown` })
   }
 }
