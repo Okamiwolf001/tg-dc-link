@@ -32,9 +32,9 @@ module.exports = (client, msg) => {
   }
 
   const options = {
-    caption: ` _${getNick(msg)}_: ${content ? `` : content}`,
+    caption: ` _${getNick(msg)}_: ${content || ``}`,
     parse_mode: `markdown` }
-
+  console.log(options)
   if (attachments.size !== 0) {
     attachments.map(file => {
       client.tgBot.sendDocument(groupID, file.url, options)
