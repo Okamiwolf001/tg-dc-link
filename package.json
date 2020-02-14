@@ -6,11 +6,15 @@
   "scripts": {},
   "author": "JaxTheWolf (Roman Lubij)",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JaxTheWolf/tg-dc-link.git"
+  },
   "dependencies": {
     "discord.js": "^11.5.1",
     "hookcord": "^2.0.2",
     "node-telegram-bot-api": "^0.40.0",
-    "request": "^2.88.0"
+    "request": "^2.88.2"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
