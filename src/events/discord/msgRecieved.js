@@ -31,6 +31,10 @@ module.exports = (client, msg) => {
     }
   }
 
+  if (content.match(/\*/g).length === 1) {
+    content = content.replace(`*`, `\\*`)
+  }
+
   const options = {
     caption: ` _${getNick(msg)}_: ${content || ``}`,
     parse_mode: `markdown` }
