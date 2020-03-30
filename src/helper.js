@@ -1,7 +1,20 @@
+/**
+* Returns a nick of a member. If none, returns user's username
+* @param {Message} msg - Discord.js message object
+* @return {string}
+* */
+
 exports.getNick = (msg) => {
   return msg.guild.member(msg.author).nickname ? msg.guild.member(
     msg.author).nickname : msg.author.username
 }
+
+/**
+ * Returns an array of mentions (IDs only) from a message
+ * @param {Message} msg - Discord.js message object
+ * @param {Client} client - Discord.js client
+ * @returns {string[]}
+ */
 
 exports.getMentionNick = (msg, client) => {
   const { USERS_PATTERN } = require(`discord.js`).MessageMentions
@@ -21,6 +34,13 @@ exports.getMentionNick = (msg, client) => {
   return ret
 }
 
+/**
+ * Returns an array of names of channels mentioned in a message
+ * @param {Message} msg - Discord.js message object
+ * @param {Client} client - Discord.js client
+ * @returns {string[]}
+ */
+
 exports.getChannelName = (msg, client) => {
   const { CHANNELS_PATTERN } = require(`discord.js`).MessageMentions
   const ret = []
@@ -30,6 +50,15 @@ exports.getChannelName = (msg, client) => {
     })
   return ret
 }
+
+/**
+ * Sends a Discord Webhook
+ * @param {Message} msg - Discord.js message object
+ * @param {URL} [f] - File URL
+ * @param {TelegramBot} bot - a node-telegram-bot-api instance
+ * @param {Hook} hook - a HookCord webhook instance
+ * @returns {Promise}
+ */
 
 exports.sendDCWebHook = (msg, f, bot, hook) => {
   const userName = () => {
@@ -96,6 +125,13 @@ exports.sendDCWebHook = (msg, f, bot, hook) => {
       }
     })
 }
+
+/**
+ * Adds an event loader (takes *.js files from a folder)
+ * @param {string} type - Type of the bot. Either discord or telegram
+ * @param {TelegramBot|Client} - a bot client instance. Should be the "same" as the type
+ * @returns {void}
+ */
 
 exports.addEventLoader = (type, bot) => {
   const fs = require(`fs`)
