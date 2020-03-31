@@ -31,7 +31,7 @@ module.exports = (client, msg) => {
     }
   }
 
-  if (content.match(/\*/g).length === 1) {
+  if (content.match(/\*/g) && content.match(/\*/g).length === 1) {
     content = content.replace(`*`, `\\*`)
   }
 
