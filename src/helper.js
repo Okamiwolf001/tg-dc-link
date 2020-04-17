@@ -148,3 +148,33 @@ exports.addEventLoader = (type, bot) => {
     })
   })
 }
+
+exports.convMarkdownFromDCtoTG = (content) => {
+  if (content.startsWith(`*`) && content.match(/\*/g).length === 1) {
+    content = content.replace(`*`, `\\*`)
+  }
+
+  if (content.startsWith(`_`) && content.match(/_/g).length === 1) {
+    content = content.replace(`_`, `\\_`)
+  }
+
+  const doMajik = (content, mk, tag) => {
+    mk === `**` ? content = content.replace(new RegExp(`\\*\\*`, `g`), `¨`)
+      : content = content.replace(new RegExp(`\\${mk}`, `g`), `¨`)
+    const ch = `¨`
+    const n = 2
+    const r = new RegExp(`((?:[^${ch}]*${ch}){${n - 1}}[^${ch}]*)${ch}`, `g`)
+    content = content.replace(r, `$1</${tag}>`).replace(/¨/g, `<${tag}>`)
+    return content
+  }
+
+  const mkdowns = { s: `~~`, b: `**`, em: `*`, u: `__` }
+  for (const prop in mkdowns) {
+    const r = new RegExp(`\\${mkdowns[prop]}`, `g`)
+    if (content.match(r) && content.match(r).length >= 2) {
+      content = doMajik(content, mkdowns[prop], prop)
+    }
+  }
+  content = content.replace(/<\/b><\/em>/g, `</em></b>`)
+  return content
+}

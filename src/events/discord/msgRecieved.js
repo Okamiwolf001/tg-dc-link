@@ -1,5 +1,5 @@
 const groupID = require(`../../../conf.json`).tg_group_id
-const { getMentionNick, getChannelName, getNick } = require(`../../helper`)
+const { getMentionNick, getChannelName, getNick, convMarkdownFromDCtoTG } = require(`../../helper`)
 const { USERS_PATTERN, CHANNELS_PATTERN } = require(`discord.js`).MessageMentions
 
 module.exports = (client, msg) => {
@@ -31,9 +31,7 @@ module.exports = (client, msg) => {
     }
   }
 
-  if (content.match(/\*/g) && content.match(/\*/g).length === 1) {
-    content = content.replace(`*`, `\\*`)
-  }
+  content = convMarkdownFromDCtoTG(content)
 
   const options = {
     caption: ` _${getNick(msg)}_: ${content || ``}`,
@@ -43,6 +41,6 @@ module.exports = (client, msg) => {
       client.tgBot.sendDocument(groupID, file.url, options)
     })
   } else {
-    client.tgBot.sendMessage(groupID, `_${getNick(msg)}_: ${content}`, { parse_mode: `markdown` })
+    client.tgBot.sendMessage(groupID, `<em>${getNick(msg)}</em>: ${content}`, { parse_mode: `html` })
   }
 }
