@@ -8,11 +8,12 @@ module.exports = (client, msg) => {
   let content = msg.content
 
   if (msg.mentions.members.first()) {
-    const nicks = getMentionNick(msg, client)
-    const mentions = msg.content.match(USERS_PATTERN)
-    for (let i = 0; i < mentions.length; i++) {
-      content = content.replace(mentions[i], `@${nicks[i]}`)
-    }
+    getMentionNick(msg).then(nicks => {
+      const mentions = msg.content.match(USERS_PATTERN)
+      for (let i = 0; i < mentions.length; i++) {
+        content = content.replace(mentions[i], `@${nicks[i]}`)
+      }
+    })
   }
 
   if (msg.mentions.channels.first()) {
@@ -37,7 +38,8 @@ module.exports = (client, msg) => {
 
   const options = {
     caption: ` _${getNick(msg)}_: ${content || ``}`,
-    parse_mode: `markdown` }
+    parse_mode: `markdown`
+  }
   if (attachments.size !== 0) {
     attachments.map(file => {
       client.tgBot.sendDocument(groupID, file.url, options)

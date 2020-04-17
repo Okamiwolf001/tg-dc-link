@@ -12,26 +12,34 @@ exports.getNick = (msg) => {
 /**
  * Returns an array of mentions (IDs only) from a message
  * @param {Message} msg - Discord.js message object
- * @param {Client} client - Discord.js client
  * @returns {string[]}
  */
 
-exports.getMentionNick = (msg, client) => {
+exports.getMentionNick = async (msg) => {
   const { USERS_PATTERN } = require(`discord.js`).MessageMentions
   const mentArr = []
-  const ret = []
   msg.content.match(USERS_PATTERN).forEach(
     mention => {
       if (mention.startsWith(`<@`) && mention.endsWith(`>`)) {
         mentArr.push(mention.slice(2, -1).replace(`!`, ``))
       }
     })
-  mentArr.forEach(id => {
-    ret.push(msg.guild.members.get(id).nickname
-      ? msg.guild.members.get(id).nickname
-      : client.users.get(id).username)
-  })
-  return ret
+
+  const asyncForEach = async (array, callback) => {
+    for (let index = 0; index < array.length; index++) {
+      await callback(array[index], index, array);
+    }
+  }
+
+  const aaaaa = async () => {
+    const ret = []
+    await asyncForEach(mentArr, async (id) => {
+      const m = await msg.guild.members.fetch(id)
+      ret.push(m.nickname ? m.nickname : m.user.username)
+    })
+    return ret
+  }
+  return aaaaa()
 }
 
 /**
