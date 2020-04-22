@@ -164,11 +164,11 @@ exports.convMarkdownFromDCtoTG = (content) => {
     return content
   }
 
-  const mkdowns = { s: `~~`, b: `**`, em: `*`, u: `__` }
+  const mkdowns = { s: `~~`, b: `**`, em: `*`, em_: `_`, u: `__` }
   for (const prop in mkdowns) {
     const r = new RegExp(`\\${mkdowns[prop]}`, `g`)
     if (content.match(r) && content.match(r).length >= 2) {
-      content = doMajik(content, mkdowns[prop], prop)
+      content = doMajik(content, mkdowns[prop], prop === `em_` ? `em` : prop)
     }
   }
   content = content.replace(/<\/b><\/em>/g, `</em></b>`)
