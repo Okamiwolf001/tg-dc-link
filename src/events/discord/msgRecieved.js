@@ -45,6 +45,11 @@ module.exports = (client, msg) => {
     })
   } else {
     client.tgBot.sendMessage(groupID, `<em>${getNick(msg)}</em>: ${content}`, { parse_mode: `html` })
-      .catch(msg.channel.send(`Message got eaten on Telegram. Try altering it a tad. (or some bad happened)`).then(m => m.delete(1500)))
+      .catch(e => {
+        if (e.response.body.description.includes(`Bad Request: can't parse entities: Can't find end tag corresponding to start tag`)) {
+          msg.channel.send(`Message got eaten by Telegram. Try altering it a tad. (or some bad happened, but it's most likely weird markdown)`)
+            .then(m => m.delete(3000))
+        }
+      })
   }
 }
