@@ -150,10 +150,6 @@ exports.addEventLoader = (type, bot) => {
 }
 
 exports.convMarkdownFromDCtoTG = (content) => {
-  if (content.startsWith(`*`) && content.match(/\*/g).length === 1) {
-    content = content.replace(`*`, `\\*`)
-  }
-
   if (content.startsWith(`_`) && content.match(/_/g).length === 1) {
     content = content.replace(`_`, `\\_`)
   }
