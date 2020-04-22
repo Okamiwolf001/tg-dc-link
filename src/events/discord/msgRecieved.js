@@ -45,5 +45,6 @@ module.exports = (client, msg) => {
     })
   } else {
     client.tgBot.sendMessage(groupID, `<em>${getNick(msg)}</em>: ${content}`, { parse_mode: `html` })
+      .catch(msg.channel.send(`Message got eaten on Telegram. Try altering it a tad. (or some bad happened)`).then(m => m.delete(1500)))
   }
 }
